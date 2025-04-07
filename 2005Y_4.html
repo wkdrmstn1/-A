@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>2005년 투자결과(등락률)</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: Arial, sans-serif; background-color: #000000; }
+    .page-container {
+      max-width: 1200px;
+      margin: 20px auto;
+      background-color: #f4f4f4;
+      padding: 20px;
+      border-radius: 10px;
+      color: white;
+      min-height: 615px;
+      position: relative; /* 절대 위치 요소 기준 */
+    }
+    .page-header {
+      display: flex;
+      align-items: center;
+      justify-content: center; /* 가운데 정렬 */
+      margin-bottom: 20px;
+      background-color:  #45a04969;
+      padding: 10px;
+      border-radius: 5px;
+      color: black;
+      position: relative;
+    }
+    .page-header h1 { font-size: 30px; font-weight: bold; margin: 0; }
+    /* 헤더 내부의 able.png 이미지 */
+    .able-image-header {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+    }
+    .enterprise-btns {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+    .enterprise-btns button {
+      padding: 10px 15px;
+      font-size: 18px;
+      background-color: #000;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .enterprise-btns button:hover {
+      background-color: #45a049;
+    }
+    /* 결과 표시 영역: 중앙에 크게 표시 */
+    .result-display {
+      background-color: white;
+      color: black;
+      padding: 20px;
+      border-radius: 5px;
+      font-size: 140px;
+      font-weight: bold;
+      text-align: center;
+      min-height: 400px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    /* 애니메이션: fadeBlink 무한 반복 */
+    @keyframes fadeBlink {
+      0% { opacity: 0; }
+      25% { opacity: 1; }
+      50% { opacity: 0.7; }
+      75% { opacity: 1; }
+      100% { opacity: 1; }
+    }
+    .animated-result {
+      animation: fadeBlink 1.5s ease-in-out infinite;
+    }
+    /* 색상 클래스 */
+    .negative { color: blue; }
+    .positive { color: red; }
+    .neutral { color: black; }
+    /* 페이지 컨테이너 바깥쪽 아래에 배치되는 NEXT 버튼 */
+    .next-button-container {
+      position: absolute;
+      bottom: 5px; /* 컨테이너 밖쪽으로 */
+      right: 18px;
+      padding: 10px 15px;
+      font-size: 16px;
+      background-color: #000;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .next-button-container:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+  <div class="page-container">
+    <div class="page-header">
+      <h1>2005년 투자결과</h1>
+      <!-- 헤더 내부에 able.png 이미지 배치 -->
+      <img class="able-image-header" src="able.png" alt="에이블 로고">
+    </div>
+    <div class="enterprise-btns">
+      <button onclick="showResult('A기업')">A기업</button>
+      <button onclick="showResult('B기업')">B기업</button>
+      <button onclick="showResult('C기업')">C기업</button>
+      <button onclick="showResult('D기업')">D기업</button>
+      <button onclick="showResult('E기업')">E기업</button>
+      <button onclick="showResult('F기업')">F기업</button>
+      <button onclick="showResult('G기업')">G기업</button>
+      <button onclick="showResult('H기업')">H기업</button>
+      <button onclick="showResult('I기업')">I기업</button>
+      <button onclick="showResult('J기업')">J기업</button>
+      <button onclick="showResult('K기업')">K기업</button>
+      <button onclick="showResult('L기업')">L기업</button>
+    </div>
+    <div class="result-display" id="resultDisplay">
+    </div>
+    <!-- 페이지 컨테이너 바깥쪽 아래에 NEXT 버튼 배치 -->
+    <button class="next-button-container" onclick="window.location.href='2009Y_1.html'">NEXT</button>
+  </div>
+
+  <script>
+    function showResult(enterprise) {
+      const results = {
+        'A기업': "-1%",
+        'B기업': "-47%",
+        'C기업': "-42%",
+        'D기업': "31%",
+        'E기업': "12%",
+        'F기업': "-2%",
+        'G기업': "-15%",
+        'H기업': "-",
+        'I기업': "38%",
+        'J기업': "-52%",
+        'K기업': "-39%",
+        'L기업': "-45%"
+      };
+
+      const result = results[enterprise] || "결과가 없습니다.";
+      const resultDisplay = document.getElementById("resultDisplay");
+      // 결과 텍스트의 색상 설정
+      let colorClass = "neutral"; // 기본: neutral (검정)
+      const num = parseFloat(result);
+      if (!isNaN(num)) {
+        colorClass = num < 0 ? "negative" : (num > 0 ? "positive" : "neutral");
+      }
+      // 결과 텍스트 업데이트 및 애니메이션 클래스 추가
+      resultDisplay.innerHTML = `<p class="animated-result ${colorClass}">${result}</p>`;
+    }
+  </script>
+</body>
+</html>

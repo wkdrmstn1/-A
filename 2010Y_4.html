@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' https://dapi.kakao.com http://*.daumcdn.net http://localhost:5000; script-src 'self' 'unsafe-inline' https://dapi.kakao.com http://*.daumcdn.net https://unpkg.com https://accounts.google.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' 'unsafe-inline' https://dapi.kakao.com http://*.daumcdn.net; frame-src 'self' https://accounts.google.com;">
+  <meta http-equiv="X-Content-Security-Policy" content="default-src 'self' 'unsafe-inline' https://dapi.kakao.com http://*.daumcdn.net http://localhost:5000; script-src 'self' 'unsafe-inline' https://dapi.kakao.com http://*.daumcdn.net https://unpkg.com https://accounts.google.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' 'unsafe-inline' https://dapi.kakao.com http://*.daumcdn.net; frame-src 'self' https://accounts.google.com;">
+  <title>2010년 투자결과(등락률 지워야됨됨)</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: Arial, sans-serif; background-color: #000000; }
+    .page-container {
+      max-width: 1200px;
+      margin: 20px auto;
+      background-color:  #f4f4f4 ;
+      padding: 20px;
+      border-radius: 10px;
+      color: rgb(0, 0, 0);
+      min-height: 500px;
+      position: relative;
+    }
+    .page-header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+      background-color: #45a04969;
+      padding: 10px;
+      border-radius: 5px;
+      color: black;
+      position: relative;
+    }
+    .page-header h1 { font-size: 30px; font-weight: bold; }
+    .page-header img {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+    .global-btn-container {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .submit-btn {
+      padding: 10px 15px;
+      font-size: 18px;
+      background-color: #000;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .submit-btn:hover { background-color: #45a049; }
+    .next-btn { margin-left: auto; }
+    .teams-container {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 20px;
+      margin-top: 30px;
+    }
+    .vertical-cells-container {
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+      width: 180px;
+    }
+    .extra-margin { margin-top: 100px; }
+    .vertical-cell {
+      background-color: #ccc;
+      padding: 10px;
+      text-align: center;
+      color: black;
+      border-radius: 5px;
+      min-height: 40px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      position: relative;
+    }
+    .vertical-cell input {
+      width: 100%;
+      border: none;
+      background-color: transparent;
+      text-align: center;
+      font-size: inherit;
+      color: inherit;
+    }
+    .cell-label {
+      position: absolute;
+      top: -24px;
+      left: -15px;
+      color: rgb(0, 0, 0);
+      font-size: 13px;
+      padding: 3px 6px;
+      border-radius: 3px;
+    }
+    .profit-result {
+      margin-top: 5px;
+      font-size: 14px;
+      font-weight: bold;
+    }
+    .first-place .capital-value {
+      width: 300px;
+      height: 83px;
+      line-height: 89px;
+      font-size: 27px;
+      color: red;
+    }
+    .first-place .capital-formatted {
+      font-size: 22px;
+      color: red;
+    }
+    .first-place .team-name {
+      font-size: 45px;
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <div class="page-container">
+    <div class="page-header">
+      <h1>2010년 투자결과</h1>
+      <img class="able-image-header" src="able.png" alt="에이블 로고">
+    </div>
+    <!-- 글로벌 버튼 영역: "법인명 불러오기"와 "NEXT" 버튼만 남김 -->
+    <div class="global-btn-container">
+      <button class="submit-btn" onclick="loadTeamNames()">법인명 불러오기</button>
+      <button class="submit-btn next-btn" onclick="processNext()">NEXT</button>
+    </div>
+    <div class="teams-container" id="teamsContainer">
+      <!-- JavaScript로 10개 팀의 div 생성 -->
+    </div>
+  </div>
+
+  <script>
+    // 페이지 로드시 세션 초기화 후 팀 div 생성 (이 부분은 그대로 유지)
+    window.addEventListener('load', () => {
+      sessionStorage.clear();
+      const teamsContainer = document.getElementById("teamsContainer");
+      for (let i = 0; i < 10; i++) {
+        teamsContainer.insertAdjacentHTML("beforeend", createTeamDiv(i));
+      }
+    });
+
+    // 2010년 등락률 (사용자가 제공한 값)
+    const rates2010 = {
+      "A기업": 0.02,      // 2%
+      "B기업": 0.87,      // 87%
+      "C기업": 0.54,      // 54%
+      "D기업": 0.96,      // 96%
+      "E기업": 0.51,      // 51%
+      "F기업": 0.23,      // 23%
+      "G기업": 0.47,      // 47%
+      "H기업": 11.52,     // 1152%
+      "I기업": 2.92,      // 292%
+      "J기업": 0.42,      // 42%
+      "K기업": 0.46,      // 46%
+      "L기업": 1.01,      // 101%
+      "투자 X": 0
+    };
+
+    // 2010년 결과 계산 함수 (기준: 12000을 사용)
+    function updateCapitalWithRateForYear(teamIndex, baseCapital, rateSet) {
+      const companies = ["A","B","C","D","E","F","G","H","I","J","K","L"];
+      let totalProfit = 0;
+      companies.forEach((company, idx) => {
+        const cellInput = document.querySelector(`#verticalCellsContainer${teamIndex} #verticalCell${teamIndex}_${idx+3} input`);
+        let investment = parseFloat(cellInput ? cellInput.value : "0");
+        if (isNaN(investment)) { investment = 0; }
+        const profit = Math.round(investment * rateSet[company + "기업"]);
+        totalProfit += profit;
+        const profitEl = document.getElementById(`profit${teamIndex}_${company}기업`);
+        if (profitEl) {
+          profitEl.textContent = profit.toFixed(0);
+          if (profit > 0) { profitEl.style.color = "red"; }
+          else if (profit < 0) { profitEl.style.color = "blue"; }
+          else { profitEl.style.color = "black"; }
+        }
+      });
+      // 투자 X 칸은 등락률 없이 입력된 값을 그대로 더함
+      const cellInputX = document.querySelector(`#verticalCellsContainer${teamIndex} #verticalCell${teamIndex}_15 input`);
+      let investX = parseFloat(cellInputX ? cellInputX.value : "0");
+      if (isNaN(investX)) { investX = 0; }
+      totalProfit += Math.round(investX);
+      
+      const finalCapital = baseCapital + totalProfit;
+      const capitalCell = document.getElementById(`verticalCell${teamIndex}_1`);
+      if (capitalCell) {
+        capitalCell.innerHTML = `<span class="cell-label">자본금</span>${finalCapital}`;
+      }
+      if (baseCapital === 12000) {
+        let capitalValues = JSON.parse(localStorage.getItem("capitalValues") || "[]");
+        capitalValues[teamIndex] = finalCapital;
+        localStorage.setItem("capitalValues", JSON.stringify(capitalValues));
+      }
+      return finalCapital;
+    }
+
+    function updateCapital2005(teamIndex) {
+      return updateCapitalWithRateForYear(teamIndex, 12000, rates2010);
+    }
+
+    function createTeamDiv(teamIndex) {
+      const extraClass = teamIndex >= 5 ? ' extra-margin' : '';
+      return `
+        <div class="vertical-cells-container${extraClass}" id="verticalCellsContainer${teamIndex}">
+          <div class="vertical-cell" id="verticalCell${teamIndex}_0">
+            <span class="cell-label">팀명</span>
+          </div>
+          <div class="vertical-cell" id="verticalCell${teamIndex}_1">
+            <span class="cell-label">자본금</span>12000
+          </div>
+          <div class="vertical-cell" id="verticalCell${teamIndex}_2">
+            <span class="cell-label">투자합계</span>
+            <span id="totalValue${teamIndex}">0</span>
+          </div>
+          ${["A","B","C","D","E","F","G","H","I","J","K","L"].map((label, idx) => `
+            <div class="vertical-cell" id="verticalCell${teamIndex}_${idx+3}">
+              <span class="cell-label">${label}기업</span>
+              <input type="text" placeholder="입력하세요" oninput="calculateTotal(${teamIndex}, '${label}기업')" style="display: none;">
+              <div class="profit-result" id="profit${teamIndex}_${label}기업"></div>
+            </div>
+          `).join('')}
+          <div class="vertical-cell" id="verticalCell${teamIndex}_15">
+            <span class="cell-label">투자 X</span>
+            <input type="text" placeholder="입력하세요" oninput="calculateTotal(${teamIndex}, '투자 X'); updateCapitalWithRate(${teamIndex});">
+          </div>
+        </div>
+      `;
+    }
+
+    window.addEventListener('load', () => {
+      const teamsContainer = document.getElementById("teamsContainer");
+      for (let i = 0; i < 10; i++) {
+        teamsContainer.insertAdjacentHTML("beforeend", createTeamDiv(i));
+      }
+    });
+
+    function calculateTotal(teamIndex, companyLabel) {
+      let total = 0;
+      const container = document.getElementById(`verticalCellsContainer${teamIndex}`);
+      if (container) {
+        const inputs = container.querySelectorAll(".vertical-cell input");
+        inputs.forEach(input => {
+          const value = parseFloat(input.value);
+          if (!isNaN(value)) { total += value; }
+        });
+      }
+      const totalEl = document.getElementById(`totalValue${teamIndex}`);
+      if (totalEl) { totalEl.textContent = total; }
+    }
+
+    // loadTeamNames 함수: 로컬스토리지에서 "teamNames" 및 "investments"를 불러와 각 팀의 데이터를 업데이트
+    function loadTeamNames() {
+      const teamNames = JSON.parse(localStorage.getItem("teamNames") || "[]");
+      const investments = JSON.parse(localStorage.getItem("investments") || "{}");
+      for (let i = 0; i < 10; i++) {
+        const teamCell = document.querySelector(`#verticalCellsContainer${i} #verticalCell${i}_0`);
+        if (teamCell) {
+          // innerHTML을 직접 설정하여 "팀명" 레이블과 저장된 팀 이름을 함께 표시
+          teamCell.innerHTML = `<span class="cell-label">팀명</span>${teamNames[i] || ""}`;
+        }
+        if (investments[i]) {
+          ["A","B","C","D","E","F","G","H","I","J","K","L"].forEach((company, idx) => {
+            const cellInput = document.querySelector(`#verticalCellsContainer${i} #verticalCell${i}_${idx+3} input`);
+            if (cellInput && investments[i][company] !== undefined) {
+              cellInput.value = investments[i][company];
+              cellInput.style.display = "none";
+            }
+          });
+          const cellInputX = document.querySelector(`#verticalCellsContainer${i} #verticalCell${i}_15 input`);
+          if (cellInputX && investments[i]["투자 X"] !== undefined) {
+            cellInputX.value = investments[i]["투자 X"];
+          }
+        }
+        calculateTotal(i);
+        updateCapital2005(i);
+      }
+    }
+
+    function processNext() {
+      const capitalValues2010 = JSON.parse(localStorage.getItem("capitalValues2010") || "[]");
+      const capitalValues2015 = [];
+      for (let teamIndex = 0; teamIndex < 10; teamIndex++) {
+        const baseCapital = capitalValues2010[teamIndex] || 12000;
+        const newCapital = updateCapitalWithRateForYear(teamIndex, baseCapital, rates2010);
+        capitalValues2015.push(newCapital);
+      }
+      localStorage.setItem("capitalValues2015", JSON.stringify(capitalValues2015));
+      window.location.href = 'result.html';
+    }
+  </script>
+</body>
+</html> 
+
+---
+
+### 작동 로직 설명
+
+1. **페이지 초기화 및 팀 Div 생성**  
+   - 페이지가 로드되면 `sessionStorage.clear()`를 호출하여 세션 데이터를 초기화하고, `teamsContainer` 요소에 10개의 팀 Div가 동적으로 생성됩니다.  
+   - 각 팀 Div는 `createTeamDiv` 함수에 의해 생성되며, 팀명, 자본금(기본값 12000), 투자합계, 그리고 A~L기업 및 투자 X에 대한 입력란을 포함합니다.
+
+2. **법인명 불러오기 (loadTeamNames)**  
+   - "법인명 불러오기" 버튼 클릭 시, `loadTeamNames` 함수가 실행됩니다.  
+   - 이 함수는 로컬스토리지에서 "teamNames"와 "investments" 데이터를 가져와 각 팀의 첫 번째 셀(팀명 영역)에 저장된 팀명을 표시합니다.  
+   - 또한, 각 팀의 해당 기업별 투자금액(투자 X 포함)을 입력란에 채워넣고, 자동으로 총 투자합계를 계산하며 자본금도 업데이트합니다.  
+   - 업데이트된 자본금은 `updateCapital2005` 함수를 통해 계산되며, 이는 `updateCapitalWithRateForYear` 함수를 2010년 등락률(rates2010)을 사용하여 실행합니다.
+
+3. **투자금 저장 (saveInvestments)**  
+   - "투자금 저장" 기능은 각 팀의 A~L기업 및 투자 X에 입력된 값을 로컬스토리지의 "investments" 키와 "capitalValues" 키에 저장합니다.  
+   - 각 팀의 자본금은 `updateCapital2005` 함수를 통해 계산되어 "capitalValues"에 저장됩니다.
+
+4. **NEXT 버튼 (processNext)**  
+   - "NEXT" 버튼 클릭 시, `processNext` 함수가 실행되어 로컬스토리지에 저장된 2010년 자본금을 불러와, 2010년 등락률(rates2010)을 다시 적용하여 최종 2015년 자본금을 계산한 후, "capitalValues2015" 키에 저장하고 결과 페이지(result.html)로 이동합니다.
+
+5. **결과 표시 페이지**  
+   - 별도의 결과 표시 페이지(result.html)는 로컬스토리지의 "teamNames"와 "capitalValues2015" 값을 사용해 각 팀의 최종 자본금을 표시하고, 그래프로 시각화합니다.
+
+이 코드에서 "법인명 불러오기" 버튼이 정상적으로 작동하도록 수정한 부분은 팀명의 innerHTML을 직접 재설정하여 "팀명" 레이블과 저장된 팀 이름을 함께 표시하게 한 점입니다.  
+이렇게 하면 로컬스토리지에 저장된 팀 이름이 정상적으로 불러와져서 각 팀의 첫 번째 셀에 나타나게 됩니다.
+
+---
+
+이 로직이 여러분이 원하시는 동작(2010년 등락률에 따라 자본금 계산 후 결과 페이지로 전달)을 수행합니다.  
+혹시 추가적으로 수정이 필요한 부분이나 질문이 있으시면 말씀해 주세요.

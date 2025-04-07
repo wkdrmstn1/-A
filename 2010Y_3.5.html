@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' https://dapi.kakao.com http://*.daumcdn.net http://localhost:5000; script-src 'self' 'unsafe-inline' https://dapi.kakao.com http://*.daumcdn.net https://unpkg.com https://accounts.google.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' 'unsafe-inline' https://dapi.kakao.com http://*.daumcdn.net; frame-src 'self' https://accounts.google.com;">
+  <meta http-equiv="X-Content-Security-Policy" content="default-src 'self' 'unsafe-inline' https://dapi.kakao.com http://*.daumcdn.net http://localhost:5000; script-src 'self' 'unsafe-inline' https://dapi.kakao.com http://*.daumcdn.net https://unpkg.com https://accounts.google.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' 'unsafe-inline' https://dapi.kakao.com http://*.daumcdn.net; frame-src 'self' https://accounts.google.com;">
+  <title>2010년 투자결과(등락률)</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: Arial, sans-serif; background-color: #000000; }
+    .page-container {
+      max-width: 1200px;
+      margin: 20px auto;
+      background-color:  #f4f4f4;
+      padding: 20px;
+      border-radius: 10px;
+      color: white;
+      min-height: 615px;
+      position: relative;
+    }
+    .page-header {
+      display: flex;
+      align-items: center;
+      justify-content: center; /* 가운데 정렬 */
+      margin-bottom: 20px;
+      background-color:  #45a04969;
+      padding: 10px;
+      border-radius: 5px;
+      color: black;
+      position: relative;
+    }
+    .page-header h1 { font-size: 30px; font-weight: bold; }
+    .able-image-header {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+    }
+    .enterprise-btns {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+    .enterprise-btns button {
+      padding: 10px 15px;
+      font-size: 18px;
+      background-color: #000;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .enterprise-btns button:hover {
+      background-color: #45a049;
+    }
+    .result-display {
+      background-color: white;
+      color: black;
+      padding: 20px;
+      border-radius: 5px;
+      font-size: 140px;
+      font-weight: bold;
+      text-align: center;
+      min-height: 400px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    @keyframes fadeBlink {
+      0% { opacity: 0; }
+      25% { opacity: 1; }
+      50% { opacity: 0.7; }
+      75% { opacity: 1; }
+      100% { opacity: 1; }
+    }
+    .animated-result {
+      animation: fadeBlink 1.5s ease-in-out infinite;
+    }
+    .negative { color: blue; }
+    .positive { color: red; }
+    .neutral { color: black; }
+    .next-button-container {
+      position: absolute;
+      bottom: 5px;
+      right: 18px;
+      padding: 10px 15px;
+      font-size: 16px;
+      background-color: #000;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .next-button-container:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+  <div class="page-container">
+    <div class="page-header">
+      <h1>2010년 투자결과</h1>
+      <img class="able-image-header" src="able.png" alt="에이블 로고">
+    </div>
+    <div class="enterprise-btns">
+      <button onclick="showResult('A기업')">A기업</button>
+      <button onclick="showResult('B기업')">B기업</button>
+      <button onclick="showResult('C기업')">C기업</button>
+      <button onclick="showResult('D기업')">D기업</button>
+      <button onclick="showResult('E기업')">E기업</button>
+      <button onclick="showResult('F기업')">F기업</button>
+      <button onclick="showResult('G기업')">G기업</button>
+      <button onclick="showResult('H기업')">H기업</button>
+      <button onclick="showResult('I기업')">I기업</button>
+      <button onclick="showResult('J기업')">J기업</button>
+      <button onclick="showResult('K기업')">K기업</button>
+      <button onclick="showResult('L기업')">L기업</button>
+    </div>
+    <div class="result-display" id="resultDisplay"></div>
+    <button class="next-button-container" onclick="window.location.href='2010Y_4.html'">NEXT</button>
+  </div>
+
+  <script>
+    // 2010년 등락률를 업데이트 (소수값)
+    const rates2010 = {
+      "A기업": 0.02,      // 2%
+      "B기업": 0.87,      // 87%
+      "C기업": 0.54,      // 54%
+      "D기업": 0.96,      // 96%
+      "E기업": 0.51,      // 51%
+      "F기업": 0.23,      // 23%
+      "G기업": 0.47,      // 47%
+      "H기업": 11.52,     // 1152%
+      "I기업": 2.92,      // 292%
+      "J기업": 0.42,      // 42%
+      "K기업": 0.46,      // 46%
+      "L기업": 1.01,      // 101%
+      "투자 X": 0
+    };
+
+    // 2010년 결과 계산 함수 (기준: 12000을 사용)
+    function updateCapitalWithRateForYear(teamIndex, baseCapital, rateSet) {
+      const companies = ["A","B","C","D","E","F","G","H","I","J","K","L"];
+      let totalProfit = 0;
+      companies.forEach((company, idx) => {
+        const cellInput = document.querySelector(`#verticalCellsContainer${teamIndex} #verticalCell${teamIndex}_${idx+3} input`);
+        let investment = parseFloat(cellInput ? cellInput.value : "0");
+        if (isNaN(investment)) { investment = 0; }
+        const profit = Math.round(investment * rateSet[company + "기업"]);
+        totalProfit += profit;
+        // 해당 기업의 손익 결과는 필요 시 여기서 업데이트(현재는 생략)
+      });
+      // 투자 X 칸은 등락률 없이 입력된 값을 그대로 더함
+      const cellInputX = document.querySelector(`#verticalCellsContainer${teamIndex} #verticalCell${teamIndex}_15 input`);
+      let investX = parseFloat(cellInputX ? cellInputX.value : "0");
+      if (isNaN(investX)) { investX = 0; }
+      totalProfit += Math.round(investX);
+      
+      const finalCapital = baseCapital + totalProfit;
+      const capitalCell = document.getElementById(`verticalCell${teamIndex}_1`);
+      if (capitalCell) {
+        capitalCell.innerHTML = `<span class="cell-label">자본금</span>${finalCapital}`;
+      }
+      // 2005년 데이터일 경우, 기본값 12000을 기준으로 저장 (여기서는 해당 로직 유지)
+      if (baseCapital === 12000) {
+        let capitalValues = JSON.parse(localStorage.getItem("capitalValues") || "[]");
+        capitalValues[teamIndex] = finalCapital;
+        localStorage.setItem("capitalValues", JSON.stringify(capitalValues));
+      }
+      return finalCapital;
+    }
+
+    // 한 팀의 HTML 구조 생성
+    function createTeamDiv(teamIndex) {
+      const extraClass = teamIndex >= 5 ? ' extra-margin' : '';
+      return `
+        <div class="vertical-cells-container${extraClass}" id="verticalCellsContainer${teamIndex}">
+          <div class="vertical-cell" id="verticalCell${teamIndex}_0">
+            <span class="cell-label">팀명</span>
+          </div>
+          <div class="vertical-cell" id="verticalCell${teamIndex}_1">
+            <span class="cell-label">자본금</span>12000
+          </div>
+          <div class="vertical-cell" id="verticalCell${teamIndex}_2">
+            <span class="cell-label">투자합계</span>
+            <span id="totalValue${teamIndex}">0</span>
+          </div>
+          ${["A","B","C","D","E","F","G","H","I","J","K","L"].map((label, idx) => `
+            <div class="vertical-cell" id="verticalCell${teamIndex}_${idx+3}">
+              <span class="cell-label">${label}기업</span>
+              <input type="text" placeholder="입력하세요" oninput="calculateTotal(${teamIndex}, '${label}기업')" style="display: none;">
+              <!-- profit-result 영역이 필요 시 추가 -->
+            </div>
+          `).join('')}
+          <div class="vertical-cell" id="verticalCell${teamIndex}_15">
+            <span class="cell-label">투자 X</span>
+            <input type="text" placeholder="입력하세요" oninput="calculateTotal(${teamIndex}, '투자 X'); updateCapitalWithRateForYear(${teamIndex}, 12000, rates2010);">
+          </div>
+        </div>
+      `;
+    }
+
+    // 전체 팀의 div를 생성하여 teamsContainer에 추가합니다.
+    window.addEventListener('load', () => {
+      const teamsContainer = document.getElementById("teamsContainer");
+      for (let i = 0; i < 10; i++) {
+        teamsContainer.insertAdjacentHTML("beforeend", createTeamDiv(i));
+      }
+    });
+
+    // 각 팀별 투자합계를 단순 합산하여 업데이트합니다.
+    function calculateTotal(teamIndex, companyLabel) {
+      let total = 0;
+      const container = document.getElementById(`verticalCellsContainer${teamIndex}`);
+      if (container) {
+        const inputs = container.querySelectorAll(".vertical-cell input");
+        inputs.forEach(input => {
+          const value = parseFloat(input.value);
+          if (!isNaN(value)) { total += value; }
+        });
+      }
+      const totalEl = document.getElementById(`totalValue${teamIndex}`);
+      if (totalEl) { totalEl.textContent = total; }
+    }
+
+    // NEXT 버튼 클릭 시 (여기서는 별도의 계산 없이 저장된 2010년 자본금을 기반으로 2015년 자본금으로 그대로 사용)
+    function processNext() {
+      // 예: 추가 계산이 필요하면 여기에 구현
+      window.location.href = 'result.html';
+    }
+
+    // 결과 표시 기능 (기업별 등락률 결과 표시)
+    function showResult(enterprise) {
+      const results = {
+        'A기업': "월마트 : 2%",
+        'B기업': "마이크로소프트 : 87%",
+        'C기업': "도요타 : 54%",
+        'D기업': "애플 : 96%",
+        'E기업': "구글 : 51%",
+        'F기업': "코카콜라 : 23%",
+        'G기업': "삼성전자 : 47%",
+        'H기업': "테슬라 : 1152%",
+        'I기업': "아마존 : 292%",
+        'J기업': "화이자 : 42%",
+        'K기업': "JP모건 : 46%",
+        'L기업': "보잉 : 101%"
+      };
+      const result = results[enterprise] || "결과가 없습니다.";
+      const resultDisplay = document.getElementById("resultDisplay");
+      let colorClass = "neutral";
+      const num = parseFloat(result);
+      if (!isNaN(num)) {
+        colorClass = num < 0 ? "negative" : (num > 0 ? "positive" : "neutral");
+      }
+      resultDisplay.innerHTML = `<p class="animated-result ${colorClass}">${result}</p>`;
+    }
+  </script>
+</body>
+</html>

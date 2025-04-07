@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' https://dapi.kakao.com http://*.daumcdn.net http://localhost:5000; script-src 'self' 'unsafe-inline' https://dapi.kakao.com http://*.daumcdn.net https://unpkg.com https://accounts.google.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' 'unsafe-inline' https://dapi.kakao.com http://*.daumcdn.net; frame-src 'self' https://accounts.google.com;">
+  <meta http-equiv="X-Content-Security-Policy" content="default-src 'self' 'unsafe-inline' https://dapi.kakao.com http://*.daumcdn.net http://localhost:5000; script-src 'self' 'unsafe-inline' https://dapi.kakao.com http://*.daumcdn.net https://unpkg.com https://accounts.google.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' 'unsafe-inline' https://dapi.kakao.com http://*.daumcdn.net; frame-src 'self' https://accounts.google.com;">
+  <title>2009년 시대 상황</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #000000;
+    }
+    .container {
+      width: 100%;
+      margin: 20px auto;
+      padding: 10px;
+      max-width: 1000px;
+      background-color: #f4f4f4 ;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      color: rgb(0, 0, 0);
+    }
+    .header {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #45a04969 ;
+      padding: 0;
+    }
+    .header h1 {
+      flex-grow: 1;
+      text-align: center;
+      font-size: 30px;
+      font-weight: bold;
+      white-space: nowrap;
+      color: #000000;
+      margin-left: 45.5px;
+    }
+    .header-image {
+      flex-shrink: 0;
+    }
+    .header-image img {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+    }
+    .content {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start; /* 콘텐츠 왼쪽 정렬 */
+      justify-content: center;
+      padding: 20px 10px;
+      font-size: 20px;
+    }
+    .content p {
+      margin-top: 20px;
+      margin-bottom: 20px;
+      text-align: left; /* 텍스트 왼쪽 정렬 */
+    }
+    #displayTeamNames {
+      font-size: 22px;
+      color: yellow;
+      margin-top: 10px;
+    }
+    .submit-btn {
+      margin-top: 20px;
+      padding: 15px 25px;
+      font-size: 20px;
+      background-color: #000;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      text-align: center;
+    }
+    .submit-btn:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <h1>2009년 시대 상황</h1>
+      <div class="header-image">
+        <img src="able.png" alt="에이블 로고">
+      </div>
+    </header>
+    
+    <div class="content">
+      <p>● 무분별한 대출로 대형 은행 1곳이 파산함(2007년) 이로 인해 금융 위기 발생.</p>
+      <br>
+      <p>● 금융위기로 기업들의 자금에 어려움을 겪었으나 점차 해결 되어가고 있음.</p>
+      <br>
+      <p>● 금융위기 이후 사람들의 멈춰 있던 소비가 점차 늘어나고 있음음.</p>
+      <br>
+      <p>● 새로운 IT기기 스마트폰의 개발로 피쳐폰, 폴더폰이 점차 사라지고 스마트폰 사용자가 높아지고 있음음.</p>
+      <br>
+      
+      
+      <div id="displayTeamNames"></div>
+      
+      <!-- NEXT 버튼 -->
+      <button class="submit-btn" style="margin: 20px auto; display: block;" onclick="location.href='2009Y_3.html'">NEXT</button>
+    </div>
+  </div>
+</body>
+</html>

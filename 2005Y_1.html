@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' https://dapi.kakao.com http://*.daumcdn.net http://localhost:5000; script-src 'self' 'unsafe-inline' https://dapi.kakao.com http://*.daumcdn.net https://unpkg.com https://accounts.google.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' 'unsafe-inline' https://dapi.kakao.com http://*.daumcdn.net; frame-src 'self' https://accounts.google.com;">
+  <meta http-equiv="X-Content-Security-Policy" content="default-src 'self' 'unsafe-inline' https://dapi.kakao.com http://*.daumcdn.net http://localhost:5000; script-src 'self' 'unsafe-inline' https://dapi.kakao.com http://*.daumcdn.net https://unpkg.com https://accounts.google.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' 'unsafe-inline' https://dapi.kakao.com http://*.daumcdn.net; frame-src 'self' https://accounts.google.com;">
+  <title>시작</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #000;
+    }
+    .container {
+      width: 100%;
+      margin: 20px auto;
+      padding: 10px;
+      max-width: 1000px;
+      background-color: #f4f4f4; /* 흰색 배경 */
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      color: #333333; /* 어두운 회색 텍스트 */
+    }
+    .header {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #45a04969;  /* 연한 파란색 */
+      padding: 0;
+      border-radius: 5px;
+    }
+    .header h1 {
+      flex-grow: 1;
+      text-align: center;
+      font-size: 30px;
+      font-weight: bold;
+      white-space: nowrap;
+      color: #000000;
+      margin-left: 45.5px;
+    }
+    .header-image {
+      flex-shrink: 0;
+    }
+    .header-image img {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+    }
+    .content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px 10px;
+      font-size: 20px;
+      color: #333333;
+    }
+    .content p {
+      margin-top: 20px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    .team-names {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+      justify-items: center;
+      margin: 20px 60px 0 60px;
+      align-items: center;
+    }
+    .team-names input {
+      margin: 5px;
+      padding: 12px;
+      font-size: 16px;
+      width: 180px;
+      height: 40px;
+      text-align: center;
+      border: 1px solid #cccccc;
+      border-radius: 5px;
+    }
+    .submit-btn {
+      margin-top: 20px;
+      padding: 15px 25px;
+      font-size: 20px;
+      background-color: #000000; /* 밝은 녹색 */
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      grid-column: 1 / -1;
+    }
+    .submit-btn:hover {
+      background-color: #66bb6a;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <h1>주식 모의투자</h1>
+      <div class="header-image">
+        <img src="able.png" alt="에이블 로고">
+      </div>
+    </header>
+    
+    <div class="content">
+      <p>지금부터 우리는 2005년으로 이동하여 투자를 시작합니다.</p>
+      <p>2005년 -> 2009년 || 2009년 -> 2010년 || 2010년 -> 2015년</p> 
+      <p>총 세 차례 이동하며, 시작 자본금은 "1억2천만원" 입니다.</p>
+      <p>금액은 만원 단위로 12,000으로 표기합니다.</p>
+      <p>A~L 기업까지 잘 검토 후 투자를 해주세요.</p>
+      <div style="color: #ff0000; font-size: 25px;">
+        <br>
+        <br>
+        [4인 1조 팀을 만들고 여러분의 투자 법인명을 정해주세요]
+      </div>
+    </div>
+
+    <!-- 팀 이름 입력 영역 -->
+    <div class="team-names">
+      <input type="text" placeholder="팀 1" id="team1">
+      <input type="text" placeholder="팀 2" id="team2">
+      <input type="text" placeholder="팀 3" id="team3">
+      <input type="text" placeholder="팀 4" id="team4">
+      <input type="text" placeholder="팀 5" id="team5">
+      <input type="text" placeholder="팀 6" id="team6">
+      <input type="text" placeholder="팀 7" id="team7">
+      <input type="text" placeholder="팀 8" id="team8">
+      <input type="text" placeholder="팀 9" id="team9">
+      <input type="text" placeholder="팀 10" id="team10">
+      <button class="submit-btn" onclick="saveTeamNames()">START</button>
+    </div>
+  </div>
+
+  <script>
+    // 페이지 로드 시 로컬스토리지를 초기화합니다.
+    window.addEventListener('load', () => {
+      localStorage.clear();
+    });
+
+    function saveTeamNames() {
+      const teamNames = [];
+      for (let i = 1; i <= 10; i++) {
+        const teamName = document.getElementById(`team${i}`).value;
+        teamNames.push(teamName);
+      }
+      console.log("입력된 팀 이름들:", teamNames);
+      // 팀 이름을 로컬스토리지에 저장
+      localStorage.setItem("teamNames", JSON.stringify(teamNames));
+      // 다음 페이지로 이동
+      window.location.href = "2005Y_2.html";
+    }
+  </script>
+</body>
+</html>

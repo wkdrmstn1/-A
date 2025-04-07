@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' https://dapi.kakao.com http://*.daumcdn.net http://localhost:5000; script-src 'self' 'unsafe-inline' https://dapi.kakao.com http://*.daumcdn.net https://unpkg.com https://accounts.google.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' 'unsafe-inline' https://dapi.kakao.com http://*.daumcdn.net; frame-src 'self' https://accounts.google.com;">
+  <meta http-equiv="X-Content-Security-Policy" content="default-src 'self' 'unsafe-inline' https://dapi.kakao.com http://*.daumcdn.net http://localhost:5000; script-src 'self' 'unsafe-inline' https://dapi.kakao.com http://*.daumcdn.net https://unpkg.com https://accounts.google.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' 'unsafe-inline' https://dapi.kakao.com http://*.daumcdn.net; frame-src 'self' https://accounts.google.com;">
+  <title>2005년 시대 상황</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #000000;
+    }
+    .container {
+      width: 100%;
+      margin: 20px auto;
+      padding: 10px;
+      max-width: 1000px;
+      background-color: #f4f4f4 ;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      color: rgb(0, 0, 0);
+    }
+    .header {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #45a04969;
+
+      padding: 0;
+    }
+    .header h1 {
+      flex-grow: 1;
+      text-align: center;
+      font-size: 30px;
+      font-weight: bold;
+      white-space: nowrap;
+      color: #000000;
+      margin-left: 45.5px;
+    }
+    .header-image {
+      flex-shrink: 0;
+    }
+    .header-image img {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+    }
+    .content {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start; /* 콘텐츠 왼쪽 정렬 */
+      justify-content: center;
+      padding: 20px 10px;
+      font-size: 20px;
+    }
+    .content p {
+      margin-top: 20px;
+      margin-bottom: 20px;
+      text-align: left; /* 텍스트 왼쪽 정렬 */
+    }
+    #displayTeamNames {
+      font-size: 22px;
+      color: yellow;
+      margin-top: 10px;
+    }
+    .submit-btn {
+      margin-top: 20px;
+      padding: 15px 25px;
+      font-size: 20px;
+      background-color: #000;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      text-align: center;
+    }
+    .submit-btn:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <h1>2005년 시대 상황</h1>
+      <div class="header-image">
+        <img src="able.png" alt="에이블 로고">
+      </div>
+    </header>
+    
+    <div class="content">
+      <p>● 인터넷과 개인 컴퓨터를 많은 사람들에게 보급되어 인터넷, 컴퓨터 사용 빈도가 높아짐.</p>
+      <br>
+      <p>● 세계가 서로 연결되기 시작하여 금융, 수출, 수입, 제조 위탁 등의 거래가 서로 활발하게 이루어짐.</p>
+      <br>
+      <p>● 초 저금리로 인해 아파트, 건물 등의 가치가 점점 높아지고 있음.</p>
+      <br>
+      <p>● 아파트, 건물을 담보로 대출 및 관련 파생상품의 판매가 점점 많아지고 있음.</p>
+      <br>
+      <p>● 새로운 IT 기기의 개발 완성 소식이 들림.</p>
+      <br>
+      
+      <div id="displayTeamNames"></div>
+      
+      <!-- NEXT 버튼 -->
+      <button class="submit-btn" style="margin: 20px auto; display: block;" onclick="location.href='2005Y_3.html'">NEXT</button>
+    </div>
+  </div>
+</body>
+</html>

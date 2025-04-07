@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" 
+        content="default-src 'self' 'unsafe-inline' https://dapi.kakao.com http://*.daumcdn.net http://localhost:5000; script-src 'self' 'unsafe-inline' https://dapi.kakao.com http://*.daumcdn.net https://unpkg.com https://accounts.google.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' 'unsafe-inline' https://dapi.kakao.com http://*.daumcdn.net; frame-src 'self' https://accounts.google.com;">
+  <meta http-equiv="X-Content-Security-Policy" 
+        content="default-src 'self' 'unsafe-inline' https://dapi.kakao.com http://*.daumcdn.net http://localhost:5000; script-src 'self' 'unsafe-inline' https://dapi.kakao.com http://*.daumcdn.net https://unpkg.com https://accounts.google.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' 'unsafe-inline' https://dapi.kakao.com http://*.daumcdn.net; frame-src 'self' https://accounts.google.com;">
+  <title>최종 결과 발표</title>
+  <!-- Chart.js 라이브러리 -->
+  <script src="https://unpkg.com/chart.js"></script>
+  <style>
+    /* 기존 CSS 내용 그대로 */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: Arial, sans-serif; background-color: #000000; }
+    .page-container {
+      max-width: 1200px;
+      margin: 20px auto;
+      background-color: #f4f4f4;
+      padding: 20px;
+      border-radius: 10px;
+      color: white;
+      position: relative;
+    }
+    .page-header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+      background-color: #45a04969;
+      padding: 10px;
+      border-radius: 5px;
+      color: black;
+      position: relative;
+    }
+    .page-header h1 { font-size: 30px; font-weight: bold; }
+    .global-btn-container {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      margin-bottom: 20px;
+    }
+    .submit-btn {
+      padding: 10px 15px;
+      font-size: 18px;
+      background-color: #000;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .submit-btn:hover { background-color: #45a049; }
+    .results-container {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .team-result {
+      text-align: center;
+      position: relative;
+    }
+    .capital-container {
+      position: relative;
+      display: inline-block;
+    }
+    .capital-value {
+      width: 200px;
+      height: 55px;
+      background-color: #ccc;
+      color: black;
+      border-radius: 5px;
+      text-align: center;
+      line-height: 59px;
+      font-size: 18px;
+      padding: 0 5px;
+    }
+    .capital-formatted {
+      display: block;
+      text-align: center;
+      font-size: 15px;
+      color: rgb(0, 0, 0);
+      margin-top: 5px;
+    }
+    .team-name {
+      position: absolute;
+      right: 100%;
+      top: 35%;
+      transform: translate(-10px, -50%);
+      font-weight: bold;
+      font-size: 30px;
+      white-space: nowrap;
+      color: black;
+    }
+    .first-place .capital-value {
+      width: 300px;
+      height: 83px;
+      line-height: 89px;
+      font-size: 27px;
+      color: red;
+    }
+    .first-place .capital-formatted {
+      font-size: 22px;
+      color: red;
+    }
+    .first-place .team-name {
+      font-size: 45px;
+      color: red;
+    }
+    #sortButtonContainer {
+      text-align: center;
+      margin-top: 20px;
+      display: none;
+    }
+    #chartContainer {
+      display: none;
+      margin-top: 20px;
+    }
+    #chartCanvas {
+      max-width: 100%;
+      background-color: white;
+      border-radius: 10px;
+    }
+    /* 애니메이션 관련 */
+    @keyframes fadeBlink {
+      0% { opacity: 0; }
+      25% { opacity: 1; }
+      50% { opacity: 0.7; }
+      75% { opacity: 1; }
+      100% { opacity: 1; }
+    }
+    .animated-result {
+      animation: fadeBlink 1.5s ease-in-out infinite;
+    }
+    .negative { color: blue; }
+    .positive { color: red; }
+    .neutral { color: black; }
+    .next-button-container {
+      position: absolute;
+      bottom: 5px;
+      right: 18px;
+      padding: 10px 15px;
+      font-size: 16px;
+      background-color: #000;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .next-button-container:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+  <div class="page-container">
+    <div class="page-header">
+      <h1>최종 결과 발표</h1>
+    </div>
+    <div class="global-btn-container">
+      <button class="submit-btn" onclick="loadResults()">결과 불러오기</button>
+      <button class="submit-btn" onclick="viewGraph()">그래프로 보기</button>
+    </div>
+    <div class="results-container" id="resultsContainer"></div>
+    <div id="sortButtonContainer">
+      <button class="submit-btn" onclick="sortResults()">정렬</button>
+    </div>
+    <div id="chartContainer">
+      <canvas id="chartCanvas"></canvas>
+    </div>
+  </div>
+
+  <script>
+    // loadResults() 함수는 저장된 최종 자본금 데이터("capitalValues", "capitalValues2009" 등)를 불러와서 표시합니다.
+    function loadResults() {
+      const teamNames = JSON.parse(localStorage.getItem("teamNames") || "[]");
+      // 여기서는 2009년 자본금 데이터("capitalValues")를 사용 (최종 결과 발표 시 기준)
+      const capitalValues = JSON.parse(localStorage.getItem("capitalValues") || "[]");
+      const container = document.getElementById("resultsContainer");
+      container.innerHTML = "";
+      
+      container.style.display = "flex";
+      document.getElementById("chartContainer").style.display = "none";
+      
+      for (let i = 0; i < teamNames.length; i++) {
+        if (!teamNames[i]) continue;
+        const teamName = teamNames[i];
+        const capital = (capitalValues[i] !== undefined) ? capitalValues[i] : 12000;
+        
+        const row = document.createElement("div");
+        row.className = "team-result";
+        row.dataset.capital = capital;
+        
+        const capitalContainer = document.createElement("div");
+        capitalContainer.className = "capital-container";
+        
+        const capitalEl = document.createElement("div");
+        capitalEl.className = "capital-value";
+        capitalEl.textContent = capital;
+        
+        const capitalFormattedEl = document.createElement("div");
+        capitalFormattedEl.className = "capital-formatted";
+        capitalFormattedEl.textContent = formatCapital(capital);
+        
+        const teamNameEl = document.createElement("div");
+        teamNameEl.className = "team-name";
+        teamNameEl.textContent = teamName;
+        
+        capitalContainer.appendChild(capitalEl);
+        capitalContainer.appendChild(capitalFormattedEl);
+        capitalContainer.appendChild(teamNameEl);
+        row.appendChild(capitalContainer);
+        container.appendChild(row);
+      }
+      
+      document.getElementById("sortButtonContainer").style.display = "block";
+    }
+
+    function formatCapital(value) {
+      if (value >= 100000000) {
+        let jo = Math.floor(value / 100000000);
+        let remainder = value % 100000000;
+        let result = jo + "조";
+        if (remainder >= 10000) {
+          let eok = Math.floor(remainder / 10000);
+          result += " " + eok + "억";
+          remainder = remainder % 10000;
+          if (remainder > 0) {
+            result += " " + remainder + "만원";
+          }
+        } else if (remainder > 0) {
+          result += " " + remainder + "만원";
+        }
+        return result;
+      } else if (value >= 10000) {
+        let eok = Math.floor(value / 10000);
+        let remainder = value % 10000;
+        let result = eok + "억";
+        if (remainder > 0) {
+          result += " " + remainder + "만원";
+        }
+        return result;
+      } else {
+        return value + "만원";
+      }
+    }
+
+    function sortResults() {
+      const container = document.getElementById("resultsContainer");
+      const rows = Array.from(container.getElementsByClassName("team-result"));
+      
+      rows.sort((a, b) => parseFloat(b.dataset.capital) - parseFloat(a.dataset.capital));
+      
+      container.innerHTML = "";
+      rows.forEach(row => {
+        row.classList.remove("first-place");
+        container.appendChild(row);
+      });
+      
+      if (rows.length > 0) {
+        rows[0].classList.add("first-place");
+      }
+    }
+
+    // viewGraph() 함수는 저장된 2009년, 2010년, 2015년 자본금 데이터를 불러와 그래프로 표시합니다.
+    function viewGraph() {
+      document.getElementById("resultsContainer").style.display = "none";
+      document.getElementById("sortButtonContainer").style.display = "none";
+      document.getElementById("chartContainer").style.display = "block";
+      
+      const teamNames = JSON.parse(localStorage.getItem("teamNames") || "[]");
+      const cap2009 = JSON.parse(localStorage.getItem("capitalValues2009") || "[]");
+      const cap2010 = JSON.parse(localStorage.getItem("capitalValues2010") || "[]");
+      const cap2015 = JSON.parse(localStorage.getItem("capitalValues2015") || "[]");
+      
+      // x축: 연도별 (2009, 2010, 2015)
+      const years = ["2009", "2010", "2015"];
+      const datasets = [];
+      const colors = [
+        "rgba(255, 99, 132, 1)",
+        "rgba(54, 162, 235, 1)",
+        "rgba(255, 206, 86, 1)",
+        "rgba(75, 192, 192, 1)",
+        "rgba(153, 102, 255, 1)",
+        "rgba(255, 159, 64, 1)",
+        "rgba(199, 199, 199, 1)",
+        "rgba(83, 102, 255, 1)",
+        "rgba(255, 102, 102, 1)",
+        "rgba(102, 255, 102, 1)"
+      ];
+      
+      for (let i = 0; i < teamNames.length; i++) {
+        if (!teamNames[i]) continue;
+        datasets.push({
+          label: teamNames[i],
+          data: [
+            cap2009[i] !== undefined ? cap2009[i] : 12000,
+            cap2010[i] !== undefined ? cap2010[i] : 12000,
+            cap2015[i] !== undefined ? cap2015[i] : 12000
+          ],
+          borderColor: colors[i % colors.length],
+          fill: false,
+          tension: 0.1
+        });
+      }
+      
+      // 모든 데이터 값을 모아서 최소/최대값 계산 및 패딩 적용
+      const allValues = [];
+      datasets.forEach(ds => {
+        ds.data.forEach(val => {
+          allValues.push(val);
+        });
+      });
+      const minValue = Math.min(...allValues);
+      const maxValue = Math.max(...allValues);
+      const padding = (maxValue - minValue) * 0.1;
+      const suggestedMin = Math.floor(minValue - padding);
+      const suggestedMax = Math.ceil(maxValue + padding);
+      
+      const ctx = document.getElementById("chartCanvas").getContext("2d");
+      if (window.myChart) { window.myChart.destroy(); }
+      
+      window.myChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: years,
+          datasets: datasets
+        },
+        options: {
+          responsive: true,
+          scales: {
+            y: {
+              suggestedMin: suggestedMin,
+              suggestedMax: suggestedMax,
+              ticks: {
+                callback: function(value) {
+                  if (value < 10000) {
+                    return value + "만원";
+                  }
+                  let eok = Math.floor(value / 10000);
+                  let remainder = value % 10000;
+                  let label = eok + "억";
+                  if (remainder > 0) {
+                    label += " " + remainder + "만원";
+                  }
+                  return label;
+                }
+              }
+            }
+          },
+          plugins: {
+            legend: { position: 'top' },
+            title: {
+              display: true,
+              text: '팀별 자본금 변화 (2009, 2010, 2015)'
+            }
+          }
+          // customTicks 플러그인은 제거하거나 필요시 suggestedMin, suggestedMax 범위에 맞게 수정합니다.
+        }
+      });
+    }
+  </script>
+  <div id="chartContainer">
+    <canvas id="chartCanvas"></canvas>
+  </div>
+</body>
+</html>

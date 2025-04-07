@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' https://dapi.kakao.com http://*.daumcdn.net http://localhost:5000; script-src 'self' 'unsafe-inline' https://dapi.kakao.com http://*.daumcdn.net https://unpkg.com https://accounts.google.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' 'unsafe-inline' https://dapi.kakao.com http://*.daumcdn.net; frame-src 'self' https://accounts.google.com;">
+  <meta http-equiv="X-Content-Security-Policy" content="default-src 'self' 'unsafe-inline' https://dapi.kakao.com http://*.daumcdn.net http://localhost:5000; script-src 'self' 'unsafe-inline' https://dapi.kakao.com http://*.daumcdn.net https://unpkg.com https://accounts.google.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' 'unsafe-inline' https://dapi.kakao.com http://*.daumcdn.net; frame-src 'self' https://accounts.google.com;">
+  <title>2005년 투자결과</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: Arial, sans-serif; background-color: #000000; }
+    .page-container {
+      max-width: 1200px;
+      margin: 20px auto;
+      background-color: #f4f4f4;
+      padding: 20px;
+      border-radius: 10px;
+      color: white;
+      min-height: 500px;
+      position: relative;
+    }
+    .page-header {
+      display: flex;
+      align-items: center;
+      justify-content: center; /* 가운데 정렬 */
+      margin-bottom: 20px;
+      background-color:  #45a04969;
+      padding: 10px;
+      border-radius: 5px;
+      color: black;
+      position: relative;
+    }
+    .page-header h1 { font-size: 30px; font-weight: bold; }
+    .page-header img {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+    .global-btn-container {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .submit-btn {
+      padding: 10px 15px;
+      font-size: 18px;
+      background-color: #000;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .submit-btn:hover { background-color: #45a049; }
+    .next-btn { margin-left: auto; }
+    .teams-container {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 20px;
+      margin-top: 30px;
+    }
+    .vertical-cells-container {
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+      width: 180px;
+    }
+    .extra-margin { margin-top: 100px; }
+    .vertical-cell {
+      background-color: #ccc;
+      padding: 10px;
+      text-align: center;
+      color: black;
+      border-radius: 5px;
+      min-height: 40px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      position: relative;
+    }
+    .vertical-cell input {
+      width: 100%;
+      border: none;
+      background-color: transparent;
+      text-align: center;
+      font-size: inherit;
+      color: inherit;
+    }
+    .cell-label {
+      position: absolute;
+      top: -24px;
+      left: -15px;
+      color: rgb(0, 0, 0);
+      font-size: 13px;
+      padding: 3px 6px;
+      border-radius: 3px;
+    }
+    .profit-result {
+      margin-top: 5px;
+      font-size: 14px;
+      font-weight: bold;
+    }
+    .first-place .capital-value {
+      width: 300px;
+      height: 83px;
+      line-height: 89px;
+      font-size: 27px;
+      color: red;
+    }
+    .first-place .capital-formatted {
+      font-size: 22px;
+      color: red;
+    }
+    .first-place .team-name {
+      font-size: 45px;
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <div class="page-container">
+    <div class="page-header">
+      <h1>2005년 투자결과</h1>
+      <img src="able.png" alt="에이블 로고">
+    </div>
+    <!-- 글로벌 버튼 영역: "법인명 불러오기"와 "NEXT" 버튼만 남김 -->
+    <div class="global-btn-container">
+      <button class="submit-btn" onclick="loadTeamNames()">법인명 불러오기</button>
+      <button class="submit-btn next-btn" onclick="window.location.href='2009Y_2.html'">NEXT</button>
+    </div>
+    <div class="teams-container" id="teamsContainer">
+      <!-- JavaScript로 10개 팀의 div 생성 -->
+    </div>
+  </div>
+
+  <script>
+    window.addEventListener('load', () => {
+      sessionStorage.clear();
+      const teamsContainer = document.getElementById("teamsContainer");
+      for (let i = 0; i < 10; i++) {
+        teamsContainer.insertAdjacentHTML("beforeend", createTeamDiv(i));
+      }
+    });
+
+    const rates = {
+      "A기업": -0.01,
+      "B기업": -0.47,
+      "C기업": -0.42,
+      "D기업": 0.31,
+      "E기업": 0.12,
+      "F기업": -0.02,
+      "G기업": -0.15,
+      "H기업": 0.00,
+      "I기업": 0.38,
+      "J기업": -0.52,
+      "K기업": -0.39,
+      "L기업": -0.45,
+      "투자 X": 0
+    };
+
+    // 2005년 계산 함수 (초기 자본 12000을 기준으로 2005년 등락률 적용)
+    function updateCapitalWithRate(teamIndex) {
+      return updateCapitalWithRateForYear(teamIndex, 12000, rates);
+    }
+
+    // 각 팀의 최종 자본금 계산 함수 (중복 계산 없이 12000을 기준으로 계산)
+    function updateCapitalWithRateForYear(teamIndex, baseCapital, rateSet) {
+      const companies = ["A","B","C","D","E","F","G","H","I","J","K","L"];
+      let totalProfit = 0;
+      companies.forEach((company, idx) => {
+        const cellInput = document.querySelector(`#verticalCellsContainer${teamIndex} #verticalCell${teamIndex}_${idx+3} input`);
+        let investment = parseFloat(cellInput ? cellInput.value : "0");
+        if (isNaN(investment)) { investment = 0; }
+        const profit = Math.round(investment * rateSet[company + "기업"]);
+        totalProfit += profit;
+        const profitEl = document.getElementById(`profit${teamIndex}_${company}기업`);
+        if (profitEl) {
+          profitEl.textContent = profit.toFixed(0);
+          if (profit > 0) { profitEl.style.color = "red"; }
+          else if (profit < 0) { profitEl.style.color = "blue"; }
+          else { profitEl.style.color = "black"; }
+        }
+      });
+      const cellInputX = document.querySelector(`#verticalCellsContainer${teamIndex} #verticalCell${teamIndex}_15 input`);
+      let investX = parseFloat(cellInputX ? cellInputX.value : "0");
+      if (isNaN(investX)) { investX = 0; }
+      totalProfit += Math.round(investX);
+      
+      const finalCapital = baseCapital + totalProfit;
+      const capitalCell = document.getElementById(`verticalCell${teamIndex}_1`);
+      if (capitalCell) {
+        capitalCell.innerHTML = `<span class="cell-label">자본금</span>${finalCapital}`;
+      }
+      if (rateSet === rates) {
+        let capitalValues = JSON.parse(localStorage.getItem("capitalValues") || "[]");
+        capitalValues[teamIndex] = finalCapital;
+        localStorage.setItem("capitalValues", JSON.stringify(capitalValues));
+      }
+      return finalCapital;
+    }
+
+    function createTeamDiv(teamIndex) {
+      const extraClass = teamIndex >= 5 ? ' extra-margin' : '';
+      return `
+        <div class="vertical-cells-container${extraClass}" id="verticalCellsContainer${teamIndex}">
+          <div class="vertical-cell" id="verticalCell${teamIndex}_0">
+            <span class="cell-label">팀명</span>
+          </div>
+          <div class="vertical-cell" id="verticalCell${teamIndex}_1">
+            <span class="cell-label">자본금</span>12000
+          </div>
+          <div class="vertical-cell" id="verticalCell${teamIndex}_2">
+            <span class="cell-label">투자합계</span>
+            <span id="totalValue${teamIndex}">0</span>
+          </div>
+          ${["A","B","C","D","E","F","G","H","I","J","K","L"].map((label, idx) => `
+            <div class="vertical-cell" id="verticalCell${teamIndex}_${idx+3}">
+              <span class="cell-label">${label}기업</span>
+              <input type="text" placeholder="입력하세요" oninput="calculateTotal(${teamIndex}, '${label}기업')" style="display: none;">
+              <div class="profit-result" id="profit${teamIndex}_${label}기업"></div>
+            </div>
+          `).join('')}
+          <div class="vertical-cell" id="verticalCell${teamIndex}_15">
+            <span class="cell-label">투자 X</span>
+            <input type="text" placeholder="입력하세요" oninput="calculateTotal(${teamIndex}, '투자 X'); updateCapitalWithRate(${teamIndex});">
+          </div>
+        </div>
+      `;
+    }
+
+    function loadTeamNames() {
+      const teamNames = JSON.parse(localStorage.getItem("teamNames") || "[]");
+      const investments = JSON.parse(localStorage.getItem("investments") || "{}");
+      for (let i = 0; i < 10; i++) {
+        const teamCell = document.querySelector(`#verticalCellsContainer${i} #verticalCell${i}_0`);
+        if (teamCell) {
+          teamCell.textContent = teamNames[i] || "";
+          const label = document.createElement("span");
+          label.className = "cell-label";
+          label.textContent = "팀명";
+          teamCell.prepend(label);
+        }
+        if (investments[i]) {
+          ["A","B","C","D","E","F","G","H","I","J","K","L"].forEach((company, idx) => {
+            const cellInput = document.querySelector(`#verticalCellsContainer${i} #verticalCell${i}_${idx+3} input`);
+            if (cellInput && investments[i][company] !== undefined) {
+              cellInput.value = investments[i][company];
+              cellInput.style.display = "none";
+            }
+          });
+          const cellInputX = document.querySelector(`#verticalCellsContainer${i} #verticalCell${i}_15 input`);
+          if (cellInputX && investments[i]["투자 X"] !== undefined) {
+            cellInputX.value = investments[i]["투자 X"];
+          }
+        }
+        calculateTotal(i);
+        updateCapitalWithRate(i);
+      }
+    }
+
+    function calculateTotal(teamIndex) {
+      let total = 0;
+      const container = document.getElementById(`verticalCellsContainer${teamIndex}`);
+      if (container) {
+        const inputs = container.querySelectorAll(".vertical-cell input");
+        inputs.forEach(input => {
+          const value = parseFloat(input.value);
+          if (!isNaN(value)) { total += value; }
+        });
+      }
+      const totalEl = document.getElementById(`totalValue${teamIndex}`);
+      if (totalEl) { totalEl.textContent = total; }
+    }
+  </script>
+</body>
+</html>
